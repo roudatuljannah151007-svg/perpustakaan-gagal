@@ -1,6 +1,6 @@
 <?php
 
-// Paksa buat folder /tmp/storage terlebih dahulu sebelum apapun dieksekusi
+// 1. Buat folder sementara di /tmp untuk Vercel
 $tmpStorage = '/tmp/storage';
 if (!is_dir($tmpStorage)) {
     mkdir($tmpStorage, 0777, true);
@@ -10,28 +10,22 @@ if (!is_dir($tmpStorage)) {
     mkdir($tmpStorage . '/logs', 0777, true);
 }
 
-// Override path storage lewat environment PHP secara langsung
 $_ENV['APP_STORAGE'] = $tmpStorage;
 putenv('APP_STORAGE=' . $tmpStorage);
-
-// HACK: Paksa bind path storage Laravel agar mengarah ke /tmp sebelum kernel jalan
-$__storage_path = function ($path = '') use ($tmpStorage) {
-    return $tmpStorage . ($path ? DIRECTORY_SEPARATOR . $path : '');
-};
 
 use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
+// 2. Load Composer Autoloader
 require __DIR__.'/../vendor/autoload.php';
+
+// 3. Boot aplikasi Laravel
+$app = require_api: __DIR__.'/../bootstrap/app.php'; // Atau require_once biasa
 
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
-// Pastikan instance app mengarahkan path storage ke /tmp
-if (method_exists($app, 'useStoragePath')) {
-    $app->useStoragePath($tmpStorage);
-}
-
+// 4. Buat Http Kernel dan handle request dengan benar
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 
 $response = $kernel->handle(
