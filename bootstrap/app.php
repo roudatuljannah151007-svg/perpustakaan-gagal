@@ -4,7 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
-// Redirect storage path to /tmp if running on Vercel
+// Jika berjalan di Vercel, paksa arahkan storage path ke /tmp secara global via env
 if (isset($_ENV['VERCEL']) || is_dir('/tmp')) {
     $tmpStorage = '/tmp/storage';
     if (!is_dir($tmpStorage)) {
@@ -14,8 +14,7 @@ if (isset($_ENV['VERCEL']) || is_dir('/tmp')) {
         mkdir($tmpStorage . '/framework/sessions', 0777, true);
         mkdir($tmpStorage . '/logs', 0777, true);
     }
-    
-    // Override path storage bawaan Laravel ke /tmp
+    $_ENV['APP_STORAGE'] = $tmpStorage;
     putenv('APP_STORAGE=' . $tmpStorage);
 }
 
