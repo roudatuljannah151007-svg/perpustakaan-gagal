@@ -1,8 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
-
-// Arahkan storage dan bootstrap cache ke /tmp agar bisa ditulis di Vercel
+// Arahkan storage sementara ke /tmp Vercel
 $_ENV['APP_STORAGE'] = '/tmp/storage';
 putenv('APP_STORAGE=/tmp/storage');
 
@@ -17,8 +15,16 @@ if (!is_dir('/tmp/storage')) {
 
 define('LARAVEL_START', microtime(true));
 
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
-$app = require_once __DIR__.'/../bootstrap/app.php';
+$app = require_once __DIR__ . '/../bootstrap/app.php';
 
-$app->handleRequest(Request::capture());
+$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+
+$response = $kernel->handle(
+    $request = Illuminate\Http\Request::capture()
+);
+
+$response->send();
+
+$kernel->terminate($request, $response);
