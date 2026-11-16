@@ -20,9 +20,7 @@ define('LARAVEL_START', microtime(true));
 // 2. Load Composer Autoloader
 require __DIR__.'/../vendor/autoload.php';
 
-// 3. Boot aplikasi Laravel
-$app = require_api: __DIR__.'/../bootstrap/app.php'; // Atau require_once biasa
-
+// 3. Boot aplikasi Laravel (cukup satu kali menggunakan require_once)
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
 // 4. Buat Http Kernel dan handle request dengan benar
