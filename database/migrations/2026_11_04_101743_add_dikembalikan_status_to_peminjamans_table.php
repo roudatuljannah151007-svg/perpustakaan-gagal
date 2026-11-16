@@ -1,31 +1,49 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('peminjamans', function (Blueprint $table) {
-            $table->enum('status', [
+        DB::statement("
+            ALTER TABLE peminjamans
+            DROP CONSTRAINT IF EXISTS peminjamans_status_check
+        ");
+
+        DB::statement("
+            ALTER TABLE peminjamans
+            ALTER COLUMN status TYPE VARCHAR(255)
+        ");
+
+        DB::statement("
+            ALTER TABLE peminjamans
+            ADD CONSTRAINT peminjamans_status_check
+            CHECK (status IN (
                 'menunggu',
                 'disetujui',
                 'ditolak',
                 'dikembalikan'
-            ])->default('menunggu')->change();
-        });
+            ))
+        ");
     }
 
     public function down(): void
     {
-        Schema::table('peminjamans', function (Blueprint $table) {
-            $table->enum('status', [
+        DB::statement("
+            ALTER TABLE peminjamans
+            DROP CONSTRAINT IF EXISTS peminjamans_status_check
+        ");
+
+        DB::statement("
+            ALTER TABLE peminjamans
+            ADD CONSTRAINT peminjamans_status_check
+            CHECK (status IN (
                 'menunggu',
                 'disetujui',
                 'ditolak'
-            ])->default('menunggu')->change();
-        });
+            ))
+        ");
     }
 };
