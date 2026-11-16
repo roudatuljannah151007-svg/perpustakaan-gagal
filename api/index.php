@@ -1,6 +1,6 @@
 <?php
 
-// Arahkan storage sementara ke /tmp Vercel
+// Paksa direktori storage dan cache dialihkan ke /tmp Vercel
 $_ENV['APP_STORAGE'] = '/tmp/storage';
 putenv('APP_STORAGE=/tmp/storage');
 
@@ -13,16 +13,18 @@ if (!is_dir('/tmp/storage')) {
     mkdir('/tmp/storage/logs', 0777, true);
 }
 
+use Illuminate\Http\Request;
+
 define('LARAVEL_START', microtime(true));
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
-$app = require_once __DIR__ . '/../bootstrap/app.php';
+$app = require_once __DIR__.'/../bootstrap/app.php';
 
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 
 $response = $kernel->handle(
-    $request = Illuminate\Http\Request::capture()
+    $request = Request::capture()
 );
 
 $response->send();
