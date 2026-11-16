@@ -9,12 +9,18 @@ try {
     define('LARAVEL_START', microtime(true));
 
     require __DIR__.'/../vendor/autoload.php';
-    echo "AUTOLOAD OK\n";
 
     $app = require_once __DIR__.'/../bootstrap/app.php';
-    echo "BOOTSTRAP OK\n";
 
-    $app->handleRequest(\Illuminate\Http\Request::capture());
+    $kernel = $app->make(\Illuminate\Contracts\Http\Kernel::class);
+    $request = \Illuminate\Http\Request::capture();
+
+    $response = $kernel->handle($request);
+
+    echo "STATUS: " . $response->getStatusCode() . "\n";
+    echo "LOCATION: " . ($response->headers->get('Location') ?? 'none') . "\n";
+    echo "RESPONSE BODY:\n";
+    echo $response->getContent();
 
 } catch (\Throwable $e) {
     http_response_code(500);
